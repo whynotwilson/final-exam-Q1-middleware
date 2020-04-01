@@ -7,41 +7,56 @@ const app = express()
 const port = 3000
 
 // middleware
-const consoleMiddleware = function (req, res, next) {
-  let date = new Date()
+const checkTimeMiddleware = function (req, res, next) {
+  const start = new Date().getTime()
+  function showPassTime(startTime) {
+    setTimeout(() => {
+      let sendResTime = new Date()
+      sendResTime = sendResTime.toISOString().slice(0, 10) + sendResTime.toString().slice(15, 25)
+      let endTime = new Date().getTime()
+      let passTime = endTime - startTime
+      console.log('res', 'resTime', sendResTime, '| total time: ', passTime, 'ms')
+    }, 0)
+  }
+  showPassTime(start)
+
+  let receiveReqTime = new Date()
   let checkUrl = ''
-  // console.log('toISOString', date.toISOString())
-  // console.log('toDateString', date.toISOString())
-  // console.log(date.toString().slice(16, 25))
-  date = date.toISOString().slice(0, 10) + date.toString().slice(15, 25)
+  // console.log('toISOString', receiveReqTime.toISOString())
+  // console.log('toDateString', receiveReqTime.toISOString())
+  // console.log(receiveReqTime.toString().slice(16, 25))
+  receiveReqTime = receiveReqTime.toISOString().slice(0, 10) + receiveReqTime.toString().slice(15, 25)
   checkUrl += req.rawHeaders.filter(item => {
     if (item.includes('http')) { return true }
   })
-  console.log(date, '|', req.method, 'from', checkUrl)
+
+  console.log('req', 'reqTime', receiveReqTime, '|', req.method, 'from', checkUrl)
+
   next()
 }
 
 // 列出全部 Todo
-app.get('/', consoleMiddleware, (req, res) => {
+app.get('/', checkTimeMiddleware, (req, res) => {
   res.send('列出全部 Todo')
+  console.log('列出全部 Todo res後')
 })
 
 // 新增一筆 Todo 頁面
-app.get('/new', consoleMiddleware, (req, res) => {
+app.get('/new', checkTimeMiddleware, (req, res) => {
   res.send('新增 Todo 頁面')
 })
 
 // 顯示一筆 Todo 的詳細內容
-app.get('/:id', consoleMiddleware, (req, res) => {
+app.get('/:id', checkTimeMiddleware, (req, res) => {
   res.send('顯示一筆 Todo')
 })
 
 // 新增一筆  Todo
-app.post('/', consoleMiddleware, (req, res) => {
+app.post('/', checkTimeMiddleware, (req, res) => {
   res.send('新增一筆  Todo')
 })
 
-app.delete('/:id/delete', consoleMiddleware, (req, res) => {
+app.delete('/:id/delete', checkTimeMiddleware, (req, res) => {
   res.send('刪除 Todo')
 })
 
